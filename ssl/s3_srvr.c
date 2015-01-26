@@ -987,6 +987,13 @@ int ssl3_get_client_hello(SSL *s)
 	s->client_version=(((int)p[0])<<8)|(int)p[1];
 	p+=2;
 
+	printf("ssl3_get_client_hello: version=%08x\n", s->client_version);
+	if ( s->client_version>SSL3_VERSION ) {
+		s->version = s->client_version = SSL3_VERSION;
+		al = SSL_AD_CLOSE_NOTIFY;
+		goto f_err;
+	}
+
 	if ((s->version == DTLS1_VERSION && s->client_version > s->version) ||
 	    (s->version != DTLS1_VERSION && s->client_version < s->version))
 		{
